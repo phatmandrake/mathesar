@@ -5,6 +5,7 @@ import type {
   ColumnPrivilege,
   RawColumnWithMetadata,
 } from '@mathesar/api/rpc/columns';
+import { getColumnMetadataValue } from '@mathesar/api/rpc/columns';
 import type {
   FkConstraint,
   RawConstraint,
@@ -168,11 +169,16 @@ export class ProcessedColumn implements CellColumnFabric {
     this.currentRolePrivileges = new Set(this.column.current_role_priv);
 
     this.isEditable = (() => {
+      if (getColumnMetadataValue(this.column, 'readonly')) {
+        return false;
+      }
+
       const currRoleHasEditPrivileges =
         this.currentRolePrivileges.has('UPDATE');
       if (!currRoleHasEditPrivileges) {
         return false;
       }
+
       const hasDynamicDefault = !!this.column.default?.is_dynamic;
       const isPk = !!this.column.primary_key;
       if (isPk) {

@@ -26,6 +26,7 @@ import { modifySorting } from './entries/modifySorting';
 import { openTable } from './entries/openTable';
 import { selectCellRange } from './entries/selectCellRange';
 import { setNull } from './entries/setNull';
+import { toggleReadOnly } from './entries/toggleReadOnly';
 import { viewLinkedRecord } from './entries/viewLinkedRecord';
 import { viewRowRecord } from './entries/viewRowRecord';
 
@@ -78,6 +79,8 @@ export function openTableCellContextMenu({
     yield* modifyGrouping({ tabularData, column });
 
     yield menuSection(...openTable({ column }));
+
+    yield* toggleReadOnly({ tabularData, column });
 
     yield* deleteColumn({ tabularData, column });
   }

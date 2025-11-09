@@ -27,6 +27,8 @@ import {
   faDownload,
   faEllipsisV,
   faEnvelope,
+  faEye,
+  faEyeSlash,
   faExpand,
   faExternalLink,
   faExternalLinkAlt,
@@ -272,6 +274,10 @@ export const iconFileWord: IconProps = { data: faFileWord };
 // STATUSES
 
 export const iconNotEditable: IconProps = { data: faLock };
+export const iconLockClosed: IconProps = { data: faLock };
+export const iconLockOpen: IconProps = { data: faLock };
+export const iconEye: IconProps = { data: faEye };
+export const iconEyeOff: IconProps = { data: faEyeSlash };
 export const iconUnsavedChanges: IconProps = { data: faCircleExclamation };
 export const iconYes: IconProps = { data: faCheck };
 export const iconRequiresUpgrade: IconProps = { data: faTriangleExclamation };

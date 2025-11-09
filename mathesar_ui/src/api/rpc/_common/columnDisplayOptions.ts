@@ -85,6 +85,9 @@ export interface RequiredColumnMetadata {
 
   /** TODO: document this once the backend implementation is more settled */
   file_backend: string | null;
+
+  /** Whether the column is read-only in the UI (for all users) */
+  readonly: boolean;
 }
 
 /** The column metadata values, types as we get them from the API. */
@@ -108,6 +111,7 @@ export const defaultColumnMetadata: RequiredColumnMetadata = {
   duration_max: 'm',
   display_width: DEFAULT_COLUMN_WIDTH_PX,
   file_backend: null,
+  readonly: false,
 };
 
 /**

@@ -3,6 +3,7 @@
   import { _ } from 'svelte-i18n';
 
   import { RichText } from '@mathesar/components/rich-text';
+  import { getColumnMetadataValue } from '@mathesar/api/rpc/columns';
   import type {
     ColumnsDataStore,
     ConstraintsDataStore,
@@ -25,6 +26,7 @@
 
   let isRequestingToggleAllowNull = false;
   let isRequestingToggleAllowDuplicates = false;
+  let isRequestingToggleReadOnly = false;
 
   const dispatch = createEventDispatcher();
 
@@ -33,6 +35,7 @@
   $: allowsDuplicates = !(
     column.column.primary_key || $uniqueColumns.has(column.id)
   );
+  $: isReadOnly = getColumnMetadataValue(column.column, 'readonly') === true;
 
   async function toggleAllowNull() {
     isRequestingToggleAllowNull = true;
@@ -99,6 +102,27 @@
       isRequestingToggleAllowDuplicates = false;
     }
   }
+
+  async function toggleReadOnly() {
+    isRequestingToggleReadOnly = true;
+    try {
+      const newReadOnly = !isReadOnly;
+      await columnsDataStore.setDisplayOptions(column.column, {
+        readonly: newReadOnly,
+      });
+      await columnsDataStore.fetch();
+      const msg = newReadOnly
+        ? `Column "${column.column.name}" is now read-only`
+        : `Column "${column.column.name}" is now editable`;
+      toast.success(msg);
+      dispatch('close');
+    } catch (error) {
+      const errorInfo = `Unable to update read-only setting for column "${column.column.name}"`;
+      toast.error(`${errorInfo} ${getErrorMessage(error)}.`);
+    } finally {
+      isRequestingToggleReadOnly = false;
+    }
+  }
 </script>
 
 <div class="column-options">
@@ -139,6 +163,24 @@
         disabled={isRequestingToggleAllowNull || !currentRoleOwnsTable}
         checked={!allowsNull}
         on:change={toggleAllowNull}
+      />
+    {/if}
+  </LabeledInput>
+
+  <LabeledInput layout="inline-input-first">
+    <span slot="label">
+      Read-Only
+      <Help>
+        When enabled, users cannot edit values in this column. Useful for audit columns like created_at or updated_at.
+      </Help>
+    </span>
+    {#if isRequestingToggleReadOnly}
+      <Icon class="opt" {...iconLoading} />
+    {:else}
+      <Checkbox
+        disabled={isRequestingToggleReadOnly || !currentRoleOwnsTable}
+        checked={isReadOnly}
+        on:change={toggleReadOnly}
       />
     {/if}
   </LabeledInput>
